@@ -7,9 +7,12 @@ import Mustache from "mustache";
 import { getSpeech } from "./getSpeech";
 import { getTranslate } from "./getTranslate";
 import { getDeck } from "./getDeck";
+import { getDefinition } from "./getDefinition";
+import { DeckType } from "./selectDeckType";
 
 interface GenerateDeck {
   deckName: string;
+  deckType: DeckType;
   lookups: Lookup[];
   inLang: string;
   outLang: string;
@@ -18,6 +21,7 @@ interface GenerateDeck {
 
 async function generateDeck({
   deckName,
+  deckType,
   lookups,
   inLang,
   outLang,
@@ -37,17 +41,19 @@ async function generateDeck({
 
     const usageTranslate = await getTranslate(lookup.usage, inLang, outLang);
     const stemTranslate = await getTranslate(lookup.stem, inLang, outLang);
+    const definitions = await getDefinition(lookup.stem);
 
-    const formattedUsage = lookup.usage.replace(
-      new RegExp("(" + lookup.word + ")", "gi"),
-      "<strong><em>$1</em></strong>"
+    const formattedUsage = getFormattedUsage(
+      lookup.usage,
+      lookup.word,
+      deckType
     );
 
     const front = Mustache.render(
       fs.readFileSync(path.join(rootPath, "assets/front.html")).toString(),
       {
-        word: lookup.word,
-        audioWordFilePath: wordSpeechName,
+        word: deckType === "cloze" ? undefined : lookup.word,
+        audioWordFilePath: deckType === "cloze" ? undefined : wordSpeechName,
         usage: formattedUsage,
       }
     );
@@ -61,6 +67,8 @@ async function generateDeck({
         audioUsageFilePath: usageSpeechName,
         usageTranslate,
         stemTranslate,
+        definitions: definitions.results,
+        videoUsage: `https://www.playphrase.me/#/search?q=${lookup.stem}`,
       }
     );
 
@@ -72,6 +80,22 @@ async function generateDeck({
   }
 
   return await deck.save();
+}
+
+function getFormattedUsage (usage: string, word: string, deckType: DeckType) {
+  if (deckType === "basic") {
+    return usage.replace(
+      new RegExp("(" + word + ")", "gi"),
+      "<strong><em>$1</em></strong>"
+    );
+  }
+
+  if (deckType === "cloze") {
+    return usage.replace(
+      new RegExp("(" + word + ")", "gi"),
+      `{{c1::$1::${word.length}}}`
+    );
+  }
 }
 
 export { generateDeck };

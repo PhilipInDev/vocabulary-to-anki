@@ -86,3 +86,9 @@ strong {
 .stem-translate:first-letter {
   text-transform: uppercase;
 }
+
+.definitions__def {
+  border-bottom: 1px solid gray;
+  padding-top: 10px;
+  padding-bottom: 10px;
+}

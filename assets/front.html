@@ -1,5 +1,7 @@
 <section class="content">
+  {{ #word }}
   <h3 class="title">{{ word }}</h3>
+  {{ /word }} {{ #audioWordFilePath }}
   <audio
     class="audio-back"
     src="{{ audioWordFilePath }}"
@@ -9,5 +11,6 @@
   >
     <a href="{{ audioWordFilePath }}">Download audio</a>
   </audio>
+  {{ /audioWordFilePath }}
   <p class="usage">{{{ usage }}}</p>
 </section>
