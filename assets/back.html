@@ -3,8 +3,42 @@
   <p class="stem-translate">{{ stemTranslate }}</p>
   <h5 class="book-title">{{ bookTitle }}</h5>
   <p class="usage">{{{ usage }}}</p>
-  <audio src="{{ audioUsageFilePath }}" autoplay controls type="audio/mpeg">
+  <audio src="{{ audioUsageFilePath }}" controls type="audio/mpeg">
     <a href="{{ audioUsageFilePath }}">Download audio</a>
   </audio>
   <p class="usage">{{ usageTranslate }}</p>
+  <div class="definitions">
+    {{ #definitions }}
+      <div class="definitions__def">
+        <b>{{ stem }}</b> <i>({{ partOfSpeech }})</i> - {{ definition }}
+        {{ #synonyms.length }}
+          <h5>Synonyms</h5>
+          <p>
+            <ol>
+              {{ #synonyms }}
+              <li>
+                {{ . }}
+              </li>
+              {{ /synonyms }}
+            </ol>
+          </p>
+        {{ /synonyms.length }}
+
+        {{ #examples.length }}
+          <h5>Examples</h5>
+          <p>
+            <ol>
+              {{ #examples }}
+              <li>
+                {{ . }}
+              </li>
+              {{ /examples }}
+            </ol>
+          </p>
+        {{ /examples.length }}
+      </div>
+    {{ /definitions }}
+  </div>
+  <br>
+  <a href={{ videoUsage }}>Play Phrase</a>
 </section>
